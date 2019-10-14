@@ -1,4 +1,4 @@
 {
   "Port"           : -1,
-  "DBUrl"          : "postgres://fkilpgkcuxznho:b04b62530de874d0460288f51531680e1750a9ad4576b94bf96789558c5b10f6@ec2-54-235-246-201.compute-1.amazonaws.com:5432/die9kki451vjg"
+  "DBUrl"          : "postgres://jszdilnsugyzuf:e082ea42456b0cd74ff7c03182c004243b136017a7fac96e01039f2bb5bc4823@ec2-174-129-226-232.compute-1.amazonaws.com:5432/d7qcdj2b2mhlpa"
 }
