@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/capsules-web-server/logger"
 	"os"
+	"strconv"
 )
 
 type configuration struct {
@@ -14,8 +15,10 @@ type configuration struct {
 var config configuration
 
 func Init() {
+	mode := os.Getenv("MODE")
+
 	var configPath string
-	if mode := os.Getenv("MODE"); mode == "RELEASE" {
+	if mode == "RELEASE" {
 		configPath = "config/release.json"
 	} else {
 		configPath = "config/debug.json"
@@ -30,6 +33,15 @@ func Init() {
 	err = decoder.Decode(&config)
 	if err != nil {
 		logger.Fatal("get configuration from file failed", err)
+	}
+
+	if mode == "RELEASE" {
+		portEnv := os.Getenv("PORT")
+		port, err := strconv.Atoi(portEnv)
+		if err != nil {
+			logger.Fatal("illegal port", err)
+		}
+		config.Port = port
 	}
 }
 
