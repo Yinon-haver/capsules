@@ -1,0 +1,12 @@
+{
+  "name": "Start on Heroku: Go",
+  "description": "Capsules web server",
+  "keywords": [
+    "capsules-web-server",
+    "go",
+    "sample",
+    "example"
+  ],
+  "website": "http://github.com/heroku/capsules-web-server",
+  "repository": "http://github.com/heroku/capsules-web-server"
+}
