@@ -5,24 +5,11 @@ import (
 	"fmt"
 	"github.com/capsules-web-server/config"
 	"github.com/capsules-web-server/logger"
+	"github.com/capsules-web-server/types"
 	"github.com/capsules-web-server/utils"
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 )
-
-type Capsule struct {
-	ID 			int
-	FromPhone 	string
-	ToPhones	[]string
-	PostedOn 	string
-	OpenedOn 	string
-}
-
-type Message struct {
-	FromPhone	string
-	Content		string
-	Date		string
-}
 
 var db *sql.DB
 
@@ -72,7 +59,7 @@ func CreateCapsule(phone string, toPhones []string, content string, openDate str
 	return
 }
 
-func GetCapsules(phone string, offset int, amount int, isWatched bool) (capsules []Capsule, err error) {
+func GetCapsules(phone string, offset int, amount int, isWatched bool) (capsules []types.Capsule, err error) {
 	capsulesRows, err := db.Query(fmt.Sprintf(
 		`SELECT id,from_phone,posted_on,opened_on, array_agg(user_phone)
 				FROM
@@ -90,7 +77,7 @@ func GetCapsules(phone string, offset int, amount int, isWatched bool) (capsules
 	}
 
 	for capsulesRows.Next() {
-		var capsule Capsule
+		var capsule types.Capsule
 
 		err = capsulesRows.Scan(&capsule.ID, &capsule.FromPhone, &capsule.PostedOn, &capsule.OpenedOn, pq.Array(&capsule.ToPhones))//&capsules-web-server.ToPhones
 		if err != nil {
@@ -103,14 +90,14 @@ func GetCapsules(phone string, offset int, amount int, isWatched bool) (capsules
 	return
 }
 
-func GetMessages(phone string, capsuleID int, offset int, amount int) (messages []Message, err error) {
+func GetMessages(phone string, capsuleID int, offset int, amount int) (messages []types.MessageWithDate, err error) {
 	rows, err := db.Query(fmt.Sprintf("SELECT from_user, content, message_date FROM messages WHERE capsule_id = %d ORDER BY message_date ASC LIMIT %d OFFSET %d", capsuleID, amount, offset))
 	if err != nil {
 		logger.Error("fail to get the messages of capsules-web-server from messages table in the db:", err)
 	}
 
 	for rows.Next() {
-		var message Message
+		var message types.MessageWithDate
 
 		err = rows.Scan(&message.FromPhone, &message.Content, &message.Date)
 		if err != nil {

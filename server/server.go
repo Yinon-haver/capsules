@@ -5,17 +5,24 @@ import (
 	"github.com/capsules-web-server/config"
 	"github.com/capsules-web-server/db"
 	"github.com/capsules-web-server/logger"
+	"github.com/capsules-web-server/types"
+	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 	"strconv"
 )
 
-//
-//type ChatSocket struct {
-//	CapsuleID   int
-//	Phone		string
-//}
+type userSocket struct {
+	Phone   	string
+	Socket 		*websocket.Conn
+}
 
+type capsuleChat struct {
+	CapsuleChan		chan types.MessageWithDate
+	UsersSockets	[]userSocket
+}
+
+//var capsulesChat = make(map[int]capsuleChat)
 
 func usersHandler(_ http.ResponseWriter, request *http.Request) {
 	switch request.Method {
