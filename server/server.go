@@ -2,27 +2,21 @@ package server
 
 import (
 	"encoding/json"
+	"github.com/capsules-web-server/chatManager"
 	"github.com/capsules-web-server/config"
 	"github.com/capsules-web-server/db"
 	"github.com/capsules-web-server/logger"
-	"github.com/capsules-web-server/types"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 	"strconv"
 )
 
-type userSocket struct {
-	Phone   	string
-	Socket 		*websocket.Conn
-}
 
-type capsuleChat struct {
-	CapsuleChan		chan types.MessageWithDate
-	UsersSockets	[]userSocket
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
 }
-
-//var capsulesChat = make(map[int]capsuleChat)
 
 func usersHandler(_ http.ResponseWriter, request *http.Request) {
 	switch request.Method {
@@ -115,11 +109,6 @@ func capsulesHandler(writer http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func  openChatConnection(phone string, capsuleID int) (err error) {
-	//TODO implement this function
-	return nil
-}
-
 func chatHandler(writer http.ResponseWriter, request *http.Request) {
 	switch request.Method {
 	case http.MethodGet:
@@ -172,9 +161,16 @@ func chatHandler(writer http.ResponseWriter, request *http.Request) {
 			return
 		}
 
-		err = openChatConnection(params.Phone, params.CapsuleID)
+		ws, err := upgrader.Upgrade(writer, request, nil)
 		if err != nil {
-			logger.Error("open chat connection failed:", err)
+			logger.Error("fail to create web socket:", err)
+		}
+
+		defer ws.Close()
+
+		err = chatManager.RunChat(ws, params.Phone, params.CapsuleID)
+		if err != nil {
+			logger.Error("run chat failed:", err)
 		}
 	default:
 		logger.Error("illegal http method for chat")

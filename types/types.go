@@ -8,7 +8,7 @@ type Capsule struct {
 	OpenedOn 	string
 }
 
-type MessageWithDate struct {
+type Message struct {
 	FromPhone	string
 	Content		string
 	Date		string

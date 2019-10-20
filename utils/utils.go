@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+type Void struct {}
+
 func GetTimestampString() string {
 	t := time.Now()
 	res := fmt.Sprintf("%d-%02d-%02d %02d:%02d:%02d",

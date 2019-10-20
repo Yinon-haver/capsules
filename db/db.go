@@ -90,14 +90,14 @@ func GetCapsules(phone string, offset int, amount int, isWatched bool) (capsules
 	return
 }
 
-func GetMessages(phone string, capsuleID int, offset int, amount int) (messages []types.MessageWithDate, err error) {
+func GetMessages(phone string, capsuleID int, offset int, amount int) (messages []types.Message, err error) {
 	rows, err := db.Query(fmt.Sprintf("SELECT from_user, content, message_date FROM messages WHERE capsule_id = %d ORDER BY message_date ASC LIMIT %d OFFSET %d", capsuleID, amount, offset))
 	if err != nil {
 		logger.Error("fail to get the messages of capsules-web-server from messages table in the db:", err)
 	}
 
 	for rows.Next() {
-		var message types.MessageWithDate
+		var message types.Message
 
 		err = rows.Scan(&message.FromPhone, &message.Content, &message.Date)
 		if err != nil {

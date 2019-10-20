@@ -8,8 +8,9 @@ import (
 )
 
 type configuration struct {
-	Port		int
-	DBUrl		string
+	Port					int
+	DBUrl					string
+	BrodcastChannelSize		int
 }
 
 var config configuration
@@ -51,5 +52,9 @@ func GetDBUrl() string {
 
 func GetPort() int {
 	return config.Port
+}
+
+func GetBrodcastChannelSize() int {
+	return config.BrodcastChannelSize
 }
 

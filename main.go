@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/capsules-web-server/chatManager"
 	"github.com/capsules-web-server/config"
 	"github.com/capsules-web-server/db"
 	"github.com/capsules-web-server/logger"
@@ -12,5 +13,6 @@ func main() {
 	logger.Init()
 	config.Init()
 	db.Init()
+	chatManager.Init()
 	server.Run()
 }
