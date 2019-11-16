@@ -13,3 +13,8 @@ type Message struct {
 	Content		string
 	Date		string
 }
+
+type User struct {
+	Phone string
+	Token string
+}

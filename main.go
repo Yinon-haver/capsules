@@ -8,7 +8,6 @@ import (
 	"github.com/capsules-web-server/server"
 )
 
-
 func main() {
 	logger.Init()
 	config.Init()

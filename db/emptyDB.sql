@@ -1,10 +1,11 @@
-DROP TABLE messages;
-DROP TABLE capsules_users;
-DROP TABLE capsules;
-DROP TABLE users;
+DROP TABLE IF EXISTS messages;
+DROP TABLE IF EXISTS capsules_users;
+DROP TABLE IF EXISTS capsules;
+DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (
-	phone CHAR(10) PRIMARY KEY NOT NULL
+	phone CHAR(10) PRIMARY KEY NOT NULL,
+	token CHAR(10) NOT NULL
 );
 
 CREATE TABLE capsules (

@@ -10,7 +10,7 @@ import (
 type configuration struct {
 	Port					int
 	DBUrl					string
-	BrodcastChannelSize		int
+	BroadcastChannelSize	int
 }
 
 var config configuration
@@ -54,7 +54,7 @@ func GetPort() int {
 	return config.Port
 }
 
-func GetBrodcastChannelSize() int {
-	return config.BrodcastChannelSize
+func GetBroadcastChannelSize() int {
+	return config.BroadcastChannelSize
 }
 

@@ -25,6 +25,7 @@ func usersHandler(_ http.ResponseWriter, request *http.Request) {
 
 		type Params struct {
 			Phone	string
+			Token	string
 		}
 
 		var params Params
@@ -35,7 +36,7 @@ func usersHandler(_ http.ResponseWriter, request *http.Request) {
 			return
 		}
 
-		err = db.CreateUser(params.Phone)
+		err = db.CreateUser(params.Phone, params.Token)
 		if err != nil {
 			logger.Error("create user failed:", err)
 			return
@@ -145,44 +146,48 @@ func chatHandler(writer http.ResponseWriter, request *http.Request) {
 			logger.Error("sending messages failed:", err)
 			return
 		}
-	case http.MethodPost:
-		decoder := json.NewDecoder(request.Body)
+	default:
+		logger.Error("illegal http method for chat")
+	}
+}
 
-		type Params struct {
-			Phone     string
-			CapsuleID int
-		}
+func openChatConnectionHandler(writer http.ResponseWriter, request *http.Request) {
+	switch request.Method {
+	case http.MethodGet:
+		vals := request.URL.Query()
 
-		var params Params
+		phone := vals.Get("phone")
 
-		err := decoder.Decode(&params)
+		capsuleID, err := strconv.Atoi(vals.Get("capsuleID"))
 		if err != nil {
-			logger.Error("parse chat post request failed:", err)
+			logger.Error("illegal parameter capsuleID for chat get request:", err)
 			return
 		}
 
 		ws, err := upgrader.Upgrade(writer, request, nil)
 		if err != nil {
 			logger.Error("fail to create web socket:", err)
+			return
 		}
 
 		defer ws.Close()
 
-		err = chatManager.RunChat(ws, params.Phone, params.CapsuleID)
-		if err != nil {
-			logger.Error("run chat failed:", err)
-		}
+		chatManager.RunChat(ws, phone, capsuleID)
 	default:
-		logger.Error("illegal http method for chat")
+		logger.Error("illegal http method for openChatConnectionHandler")
 	}
 }
 
 func Run() {
+	fs := http.FileServer(http.Dir("./public"))
+
 	mux := http.NewServeMux()
 
+	mux.Handle("/", fs)
 	mux.HandleFunc("/users", usersHandler)
 	mux.HandleFunc("/capsules", capsulesHandler)
 	mux.HandleFunc("/chat", chatHandler)
+	mux.HandleFunc("/openChatConnection", openChatConnectionHandler)
 
 	err := http.ListenAndServe(":" + strconv.Itoa(config.GetPort()), mux)
 	if err != nil {

@@ -1,4 +1,4 @@
 {
-  "Port"           : 8080,
+  "Port"           : 8000,
   "DBUrl"          : "postgresql://localhost/capsules?sslmode=disable"
 }

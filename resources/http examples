@@ -1,0 +1,9 @@
+http://localhost:8080/capsules?phone=0500000000&amount=2&offset=0&isWatched=false
+
+http://localhost:8080/chat?phone=0520000000&capsuleID=1&amount=1&offset=0
+
+https://capsules-web-server.herokuapp.com/capsules
+{"Phone": "1590000000", "ToPhones": ["0510000000", "0540000000"], "Content": "hi ma nishma?", "OpenDate": "2020-01-01 00:00:00"}
+
+https://capsules-web-server.herokuapp.com/users
+{"Phone": "1590000000"}

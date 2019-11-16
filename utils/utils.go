@@ -14,3 +14,9 @@ func GetTimestampString() string {
 		t.Hour(), t.Minute(), t.Second())
 	return res
 }
+
+func RunProcess(process func(), workersNumber int) {
+	for i := 0; i < workersNumber; i++ {
+		go process()
+	}
+}
