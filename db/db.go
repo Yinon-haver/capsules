@@ -117,10 +117,11 @@ func GetMessages(phone string, capsuleID int, offset int, amount int) (messages 
 
 func GetCapsuleUsers(capsuleID int) (users []types.User, err error) {
 	rows, err := db.Query(fmt.Sprintf("SELECT phone, token" +
-											" FROM users, (SELECT phone FROM capsules_users WHERE capsules_users.capsule_id = %d) as phones" +
-											" WHERE users.phone = phones.phone", capsuleID))
+											" FROM users, (SELECT user_phone FROM capsules_users WHERE capsules_users.capsule_id = %d) as phones" +
+											" WHERE phone = user_phone", capsuleID))
 	if err != nil {
 		logger.Error("fail to get the users capsules from users, capsules_users tables in the db:", err)
+		return
 	}
 
 	for rows.Next() {
@@ -138,7 +139,7 @@ func GetCapsuleUsers(capsuleID int) (users []types.User, err error) {
 }
 
 func SaveMessage(capsuleID int, message types.Message) (err error) {
-	err = db.QueryRow(fmt.Sprintf("INSERT INTO messages(capsule_id, from_user, content, message_date) VALUES('%d','%s','%s','%s')", capsuleID, message.FromPhone, message.Content, utils.GetTimestampString())).Scan(&capsuleID)
+	_, err = db.Exec(fmt.Sprintf("INSERT INTO messages(capsule_id, from_user, content, message_date) VALUES(%d,'%s','%s','%s')", capsuleID, message.FromPhone, message.Content, utils.GetTimestampString()))
 	if err != nil {
 		logger.Error("fail to insert message to messages table in db:", err)
 	}

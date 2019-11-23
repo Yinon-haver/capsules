@@ -14,16 +14,16 @@ import (
 /*************************************  sockets table structs  *************************************/
 
 type userSocketStruct struct {
-	Token		string
-	Socket 		*websocket.Conn
+	Token				string
+	Socket 				*websocket.Conn
 }
 
 type socketsTableEntryStruct struct {
-	UsersSockets map[string]userSocketStruct
-	ConnectedNumber int
+	UsersSockets 		map[string]userSocketStruct
+	ConnectedNumber 	int
 }
 
-type socketTableStruct map[int]socketsTableEntryStruct
+type socketTableStruct 	map[int]socketsTableEntryStruct
 
 /*************************************  channels structs  *************************************/
 
@@ -45,7 +45,7 @@ type disconnectUserStruct struct {
 
 type receiveMessagesStruct struct {
 	CapsuleID	int
-	Message types.Message
+	Message 	types.Message
 }
 
 type sendMessagesStruct struct {
@@ -59,7 +59,7 @@ type sendMessagesStruct struct {
 type notificationStruct struct {
 	CapsuleID	int
 	Token		string
-	Message types.Message
+	Message 	types.Message
 }
 
 type getCapsuleUsersStruct struct {
@@ -70,12 +70,12 @@ type getCapsuleUsersStruct struct {
 
 type getCapsuleTokensStruct struct {
 	CapsuleID	int
-	Message types.Message
+	Message 	types.Message
 }
 
 type saveMessagesStruct struct {
 	CapsuleID	int
-	Message types.Message
+	Message 	types.Message
 }
 
 /**********************************************************************************************/
@@ -92,6 +92,17 @@ var saveMessagesChannel		chan saveMessagesStruct
 var socketsTable			socketTableStruct
 
 func Init() {
+	addCapsuleChannel 		= make(chan addCapsuleStruct)
+	connectUserChannel 		= make(chan connectUserStruct)
+	disconnectUserChannel	= make(chan disconnectUserStruct)
+	receiveMessagesChannel	= make(chan receiveMessagesStruct)
+	sendMessagesChannel		= make(chan sendMessagesStruct)
+	notificationChannel		= make(chan notificationStruct)
+	getCapsuleUsersChannel	= make(chan getCapsuleUsersStruct)
+	getCapsuleTokensChannel	= make(chan getCapsuleTokensStruct)
+	saveMessagesChannel		= make(chan saveMessagesStruct)
+	socketsTable			= make(socketTableStruct)
+
 	utils.RunProcess(requestsHandlerProcess, 1)
 	utils.RunProcess(getCapsuleTokensProcess, 1)
 	utils.RunProcess(getCapsuleUsersProcess, 1)
@@ -204,6 +215,7 @@ func getCapsuleUsersProcess() {
 		}
 
 		var socketsTableEntry socketsTableEntryStruct
+		socketsTableEntry.UsersSockets = make(map[string]userSocketStruct)
 
 		for _, user := range users {
 			socketsTableEntry.UsersSockets[user.Phone] = userSocketStruct{Token: user.Token, Socket: nil}
@@ -305,16 +317,42 @@ func notificationsProcess() {
 func RunChat(ws *websocket.Conn, phone string, capsuleID int) {
 	var receiveMessagesRequest receiveMessagesStruct
 	receiveMessagesRequest.CapsuleID = capsuleID
+	receiveMessagesRequest.Message.FromPhone = phone
+
+	connectUserChannel <- connectUserStruct{CapsuleID:capsuleID, Phone:phone, Socket:ws}
+
+	//////////////////////////////////////checking
+
+	//messageType, p, err := ws.ReadMessage()
+	//if err != nil {
+	//	logger.Info("read from socket fail:", err)
+	//	return
+	//}
+	//
+	//fmt.Println("messageType:", messageType)
+	//receiveMessagesRequest.Message.Content = string(p[:])
+	//
+	//receiveMessagesRequest.Message.Date = utils.GetTimestampString()
+	//
+	//fmt.Println("message:", receiveMessagesRequest.Message)
+	//
+	//err = ws.WriteJSON(receiveMessagesRequest.Message.Content)
+	//if err != nil {
+	//	fmt.Println("socket error", phone, capsuleID)
+	//} else {
+	//	fmt.Println("good")
+	//}
+	///////////////////////////////////////////
 
 	for {
-		err := ws.ReadJSON(&receiveMessagesRequest.Message.Content)
-
+		_, p, err := ws.ReadMessage()
 		if err != nil {
 			logger.Info("read from socket fail:", err)
 			disconnectUserChannel <- disconnectUserStruct{CapsuleID:capsuleID, Phone:phone}
 			return
 		}
 
+		receiveMessagesRequest.Message.Content = string(p[:])
 		receiveMessagesRequest.Message.Date = utils.GetTimestampString()
 
 		receiveMessagesChannel <- receiveMessagesRequest

@@ -8,9 +8,9 @@ import (
 )
 
 type configuration struct {
+	IsReleaseMode			bool
 	Port					int
 	DBUrl					string
-	BroadcastChannelSize	int
 }
 
 var config configuration
@@ -20,8 +20,10 @@ func Init() {
 
 	var configPath string
 	if mode == "RELEASE" {
+		config.IsReleaseMode = true
 		configPath = "config/release.json"
 	} else {
+		config.IsReleaseMode = false
 		configPath = "config/debug.json"
 	}
 
@@ -54,7 +56,7 @@ func GetPort() int {
 	return config.Port
 }
 
-func GetBroadcastChannelSize() int {
-	return config.BroadcastChannelSize
+func GetIsReleaseMode() bool {
+	return config.IsReleaseMode
 }
 

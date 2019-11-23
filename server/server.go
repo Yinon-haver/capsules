@@ -6,6 +6,7 @@ import (
 	"github.com/capsules-web-server/config"
 	"github.com/capsules-web-server/db"
 	"github.com/capsules-web-server/logger"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
@@ -179,7 +180,8 @@ func openChatConnectionHandler(writer http.ResponseWriter, request *http.Request
 }
 
 func Run() {
-	fs := http.FileServer(http.Dir("./public"))
+	//fs := http.FileServer(http.Dir("./frontend/test/build"))
+	fs := http.FileServer(http.Dir("./frontend/test/build"))
 
 	mux := http.NewServeMux()
 
@@ -189,7 +191,14 @@ func Run() {
 	mux.HandleFunc("/chat", chatHandler)
 	mux.HandleFunc("/openChatConnection", openChatConnectionHandler)
 
-	err := http.ListenAndServe(":" + strconv.Itoa(config.GetPort()), mux)
+	var err error
+
+	if config.GetIsReleaseMode() {
+		err = http.ListenAndServe(":" + strconv.Itoa(config.GetPort()), mux)
+	} else {
+		corsObj := handlers.AllowedOrigins([]string{"*"})
+		err = http.ListenAndServe(":" + strconv.Itoa(config.GetPort()), handlers.CORS(corsObj)(mux))
+	}
 	if err != nil {
 		log.Fatal("listening fail:", err)
 	}
