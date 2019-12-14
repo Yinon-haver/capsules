@@ -38,6 +38,7 @@ func CreateCapsule(phone string, toPhones []string, content string, openDate str
 	err = db.QueryRow(fmt.Sprintf("INSERT INTO capsules(from_phone, posted_on, opened_on) VALUES('%s','%s','%s') RETURNING id", phone, utils.GetTimestampString(), openDate)).Scan(&capsuleID)
 	if err != nil {
 		logger.Error("fail to insert capsule to capsules table in db:", err)
+		return
 	}
 
 	for _, phone := range toPhones {
@@ -49,6 +50,7 @@ func CreateCapsule(phone string, toPhones []string, content string, openDate str
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO capsules_users(capsule_id, user_phone, is_watched) VALUES(%d,'%s',%t)", capsuleID, phone, false))
 	if err != nil {
 		logger.Error("fail to insert (capsule, user) to capsule_user table in db:", err)
+		return
 	}
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO messages(capsule_id, message_date, from_user, content) VALUES(%d,'%s','%s','%s')", capsuleID, utils.GetTimestampString(), phone, content))
@@ -74,6 +76,7 @@ func GetCapsules(phone string, offset int, amount int, isWatched bool) (capsules
 				OFFSET %d`, phone, isWatched, amount, offset))
 	if err != nil {
 		logger.Error("fail to get the capsules of user from the db:", err)
+		return
 	}
 
 	for capsulesRows.Next() {
@@ -82,6 +85,7 @@ func GetCapsules(phone string, offset int, amount int, isWatched bool) (capsules
 		err = capsulesRows.Scan(&capsule.ID, &capsule.FromPhone, &capsule.PostedOn, &capsule.OpenedOn, pq.Array(&capsule.ToPhones))
 		if err != nil {
 			logger.Error("fail to get capsule from capsules table row:", err)
+			continue
 		}
 
 		capsules = append(capsules, capsule)
@@ -94,6 +98,7 @@ func GetMessages(phone string, capsuleID int, offset int, amount int) (messages 
 	rows, err := db.Query(fmt.Sprintf("SELECT from_user, content, message_date FROM messages WHERE capsule_id = %d ORDER BY message_date ASC LIMIT %d OFFSET %d", capsuleID, amount, offset))
 	if err != nil {
 		logger.Error("fail to get the messages from messages table in the db:", err)
+		return
 	}
 
 	for rows.Next() {
@@ -102,6 +107,7 @@ func GetMessages(phone string, capsuleID int, offset int, amount int) (messages 
 		err = rows.Scan(&message.FromPhone, &message.Content, &message.Date)
 		if err != nil {
 			logger.Error("fail to get message from messages table row:", err)
+			continue
 		}
 
 		messages = append(messages, message)
@@ -116,9 +122,9 @@ func GetMessages(phone string, capsuleID int, offset int, amount int) (messages 
 }
 
 func GetCapsuleUsers(capsuleID int) (users []types.User, err error) {
-	rows, err := db.Query(fmt.Sprintf("SELECT phone, token" +
-											" FROM users, (SELECT user_phone FROM capsules_users WHERE capsules_users.capsule_id = %d) as phones" +
-											" WHERE phone = user_phone", capsuleID))
+	rows, err := db.Query(fmt.Sprintf("SELECT phone, token"+
+		" FROM users, (SELECT user_phone FROM capsules_users WHERE capsules_users.capsule_id = %d) as phones"+
+		" WHERE phone = user_phone", capsuleID))
 	if err != nil {
 		logger.Error("fail to get the users capsules from users, capsules_users tables in the db:", err)
 		return
@@ -130,6 +136,7 @@ func GetCapsuleUsers(capsuleID int) (users []types.User, err error) {
 		err = rows.Scan(&user.Phone, &user.Token)
 		if err != nil {
 			logger.Error("fail to get user from users table row:", err)
+			return
 		}
 
 		users = append(users, user)

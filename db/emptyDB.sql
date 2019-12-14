@@ -34,14 +34,3 @@ CREATE TABLE messages (
 	FOREIGN KEY (from_user) REFERENCES users(phone),
 	PRIMARY KEY(capsule_id, message_date)
 );
-
-
-
-
-
-
-
-
-
-
-
