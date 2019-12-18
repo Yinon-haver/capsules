@@ -13,7 +13,6 @@ import (
 	"strconv"
 )
 
-
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -25,8 +24,8 @@ func usersHandler(_ http.ResponseWriter, request *http.Request) {
 		decoder := json.NewDecoder(request.Body)
 
 		type Params struct {
-			Phone	string
-			Token	string
+			Phone string
+			Token string
 		}
 
 		var params Params
@@ -88,10 +87,10 @@ func capsulesHandler(writer http.ResponseWriter, request *http.Request) {
 		decoder := json.NewDecoder(request.Body)
 
 		type Params struct {
-			Phone		string
-			ToPhones	[]string
-			Content 	string
-			OpenDate	string
+			Phone    string
+			ToPhones []string
+			Content  string
+			OpenDate string
 		}
 
 		var params Params
@@ -181,7 +180,7 @@ func openChatConnectionHandler(writer http.ResponseWriter, request *http.Request
 
 func Run() {
 	//fs := http.FileServer(http.Dir("./frontend/test/build"))
-	fs := http.FileServer(http.Dir("./frontend/test/build"))
+	fs := http.FileServer(http.Dir("./frontend/build"))
 
 	mux := http.NewServeMux()
 
@@ -194,10 +193,10 @@ func Run() {
 	var err error
 
 	if config.GetIsReleaseMode() {
-		err = http.ListenAndServe(":" + strconv.Itoa(config.GetPort()), mux)
+		err = http.ListenAndServe(":"+strconv.Itoa(config.GetPort()), mux)
 	} else {
 		corsObj := handlers.AllowedOrigins([]string{"*"})
-		err = http.ListenAndServe(":" + strconv.Itoa(config.GetPort()), handlers.CORS(corsObj)(mux))
+		err = http.ListenAndServe(":"+strconv.Itoa(config.GetPort()), handlers.CORS(corsObj)(mux))
 	}
 	if err != nil {
 		log.Fatal("listening fail:", err)
