@@ -32,7 +32,6 @@ func Init() {
 		logger.Fatal("open config file failed", err)
 	}
 	decoder := json.NewDecoder(file)
-	config = configuration{}
 	err = decoder.Decode(&config)
 	if err != nil {
 		logger.Fatal("get configuration from file failed", err)

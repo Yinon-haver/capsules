@@ -183,10 +183,8 @@ func Run() {
 
 	if config.GetIsReleaseMode() {
 		fs = http.FileServer(http.Dir("./frontend/buildRelease"))
-		logger.Info("release client")
 	} else {
 		fs = http.FileServer(http.Dir("./frontend/buildDebug"))
-		logger.Info("debug client")
 	}
 
 	mux := http.NewServeMux()
