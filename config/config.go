@@ -61,5 +61,6 @@ func GetPort() int {
 }
 
 func GetIsReleaseMode() bool {
+	logger.Info("config.IsReleaseMode is", config.IsReleaseMode)
 	return config.IsReleaseMode
 }
