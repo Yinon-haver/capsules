@@ -179,8 +179,13 @@ func openChatConnectionHandler(writer http.ResponseWriter, request *http.Request
 }
 
 func Run() {
-	//fs := http.FileServer(http.Dir("./frontend/test/build"))
-	fs := http.FileServer(http.Dir("./frontend/build"))
+	var fs http.Handler
+
+	if config.GetIsReleaseMode() {
+		fs = http.FileServer(http.Dir("./frontend/buildRelease"))
+	} else {
+		fs = http.FileServer(http.Dir("./frontend/buildDebug"))
+	}
 
 	mux := http.NewServeMux()
 

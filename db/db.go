@@ -146,7 +146,8 @@ func GetCapsuleUsers(capsuleID int) (users []types.User, err error) {
 }
 
 func SaveMessage(capsuleID int, message types.Message) (err error) {
-	_, err = db.Exec(fmt.Sprintf("INSERT INTO messages(capsule_id, from_user, content, message_date) VALUES(%d,'%s','%s','%s')", capsuleID, message.FromPhone, message.Content, utils.GetTimestampString()))
+	_, err = db.Exec(fmt.Sprintf("INSERT INTO messages(capsule_id, from_user, content, message_date) "+
+		"VALUES(%d,'%s','%s','%s')", capsuleID, message.FromPhone, utils.MultiplyQuote(message.Content), utils.GetTimestampString()))
 	if err != nil {
 		logger.Error("fail to insert message to messages table in db:", err)
 	}

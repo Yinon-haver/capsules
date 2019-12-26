@@ -1,11 +1,12 @@
 package utils
 
 import (
+	"bytes"
 	"fmt"
 	"time"
 )
 
-type Void struct {}
+type Void struct{}
 
 func GetTimestampString() string {
 	t := time.Now()
@@ -19,4 +20,17 @@ func RunProcess(process func(), workersNumber int) {
 	for i := 0; i < workersNumber; i++ {
 		go process()
 	}
+}
+
+func MultiplyQuote(s string) string {
+	var buf bytes.Buffer
+
+	for _, i := range s {
+		if i == '\'' {
+			buf.WriteRune('\'')
+		}
+		buf.WriteRune(i)
+	}
+
+	return buf.String()
 }
