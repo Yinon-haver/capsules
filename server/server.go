@@ -179,6 +179,9 @@ func openChatConnectionHandler(writer http.ResponseWriter, request *http.Request
 }
 
 func Run() {
+	logger.Info("_______________________ running _______________________")
+	logger.Warning("_______________________ running _______________________")
+
 	var fs http.Handler
 
 	if config.GetIsReleaseMode() {
