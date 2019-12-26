@@ -8,9 +8,9 @@ import (
 )
 
 type configuration struct {
-	IsReleaseMode			bool
-	Port					int
-	DBUrl					string
+	IsReleaseMode bool
+	Port          int
+	DBUrl         string
 }
 
 var config configuration
@@ -22,9 +22,13 @@ func Init() {
 	if mode == "RELEASE" {
 		config.IsReleaseMode = true
 		configPath = "config/release.json"
+		logger.Info("configuration init entered to release mode")
+		logger.Info("GetIsReleaseMode return:", GetIsReleaseMode())
 	} else {
 		config.IsReleaseMode = false
 		configPath = "config/debug.json"
+		logger.Info("configuration init entered to debug mode")
+		logger.Info("GetIsReleaseMode return:", GetIsReleaseMode())
 	}
 
 	file, err := os.Open(configPath)
@@ -59,4 +63,3 @@ func GetPort() int {
 func GetIsReleaseMode() bool {
 	return config.IsReleaseMode
 }
-
