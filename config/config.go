@@ -8,9 +8,9 @@ import (
 )
 
 type configuration struct {
-	IsReleaseMode			bool
-	Port					int
-	DBUrl					string
+	IsReleaseMode bool
+	Port          int
+	DBUrl         string
 }
 
 var config configuration
@@ -32,7 +32,6 @@ func Init() {
 		logger.Fatal("open config file failed", err)
 	}
 	decoder := json.NewDecoder(file)
-	config = configuration{}
 	err = decoder.Decode(&config)
 	if err != nil {
 		logger.Fatal("get configuration from file failed", err)
@@ -59,4 +58,3 @@ func GetPort() int {
 func GetIsReleaseMode() bool {
 	return config.IsReleaseMode
 }
-
