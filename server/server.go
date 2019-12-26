@@ -179,12 +179,17 @@ func openChatConnectionHandler(writer http.ResponseWriter, request *http.Request
 }
 
 func Run() {
+	logger.Info("_______________________ running _______________________")
+	logger.Warning("_______________________ running _______________________")
+
 	var fs http.Handler
 
 	if config.GetIsReleaseMode() {
 		fs = http.FileServer(http.Dir("./frontend/buildRelease"))
+		logger.Info("release client")
 	} else {
 		fs = http.FileServer(http.Dir("./frontend/buildDebug"))
+		logger.Info("debug client")
 	}
 
 	mux := http.NewServeMux()
