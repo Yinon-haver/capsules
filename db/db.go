@@ -95,7 +95,7 @@ func GetCapsules(phone string, offset int, amount int, isWatched bool) (capsules
 }
 
 func GetMessages(phone string, capsuleID int, offset int, amount int) (messages []types.Message, err error) {
-	rows, err := db.Query(fmt.Sprintf("SELECT from_user, content, message_date FROM messages WHERE capsule_id = %d ORDER BY message_date ASC LIMIT %d OFFSET %d", capsuleID, amount, offset))
+	rows, err := db.Query(fmt.Sprintf("SELECT from_user, content, message_date FROM messages WHERE capsule_id = %d ORDER BY message_date DESC LIMIT %d OFFSET %d", capsuleID, amount, offset))
 	if err != nil {
 		logger.Error("fail to get the messages from messages table in the db:", err)
 		return
